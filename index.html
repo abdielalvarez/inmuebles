@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tramita tu herencia en CDMX con abogados expertos. Asesoría inicial sin costo. Trámites desde $5,000 MXN.">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Tramita Tu Herencia - Abogados Expertos en CDMX">
+  <meta property="og:description" content="Resuelve tu herencia con abogados especializados. Asesoría inicial sin costo.">
+  <meta property="og:locale" content="es_MX">
+
+  <!-- Favicon placeholder -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+  <title>Tramita Tu Herencia - Abogados Expertos en CDMX</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-container">
+        <a href="/" class="logo" aria-label="Tramita Tu Herencia - Inicio">
+          <img src="assets/tree.svg" alt="" class="logo-icon" aria-hidden="true">
+          <span class="logo-text">TRAMITA TU<br>HERENCIA</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content - Two Column Layout -->
+    <main class="main">
+      <div class="main-container">
+        <!-- Left Column: Hero/Text -->
+        <section class="hero-column" aria-labelledby="main-headline">
+          <h1 id="main-headline" class="headline">¿Necesitas tramitar una&nbsp;herencia en&nbsp;CDMX?</h1>
+          <p class="subheadline">Resuelve tu herencia con abogados expertos en&nbsp;sucesiones y&nbsp;bienes&nbsp;inmuebles.</p>
+
+          <!-- Benefits -->
+          <ul class="benefits" role="list" aria-label="Beneficios del servicio">
+            <li class="benefit-item">
+              <span class="benefit-icon" aria-hidden="true">✓</span>
+              <span class="benefit-text">Asesoría inicial sin costo</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-icon" aria-hidden="true">✓</span>
+              <span class="benefit-text">Trámites desde $5,000 MXN</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-icon" aria-hidden="true">✓</span>
+              <span class="benefit-text">Abogados especializados en CDMX</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-icon" aria-hidden="true">✓</span>
+              <span class="benefit-text">Atención inmediata</span>
+            </li>
+          </ul>
+
+          <!-- Trust badge (desktop only) -->
+          <aside class="trust-badge" aria-label="Credenciales">
+            <span class="trust-icon" aria-hidden="true">⚖️</span>
+            <span class="trust-text">Más de 500 herencias tramitadas exitosamente</span>
+          </aside>
+        </section>
+
+        <!-- Right Column: Form -->
+        <section class="form-column" aria-labelledby="form-title">
+          <div class="form-card" id="formCard">
+            <h2 id="form-title" class="form-title">Solicita información</h2>
+            <p class="form-subtitle">Te contactamos en menos de 24 horas</p>
+
+            <form id="leadForm" novalidate>
+              <!-- Name Field -->
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  class="form-input"
+                  placeholder=" "
+                  autocomplete="name"
+                  required
+                  minlength="2"
+                >
+                <label for="name" class="form-label">Nombre completo</label>
+                <span class="form-error" id="nameError"></span>
+              </div>
+
+              <!-- Phone Field -->
+              <div class="form-group form-group-phone">
+                <span class="phone-prefix">+52</span>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  class="form-input form-input-phone"
+                  placeholder=" "
+                  autocomplete="tel"
+                  required
+                  maxlength="10"
+                >
+                <label for="phone" class="form-label form-label-phone">Teléfono (10 dígitos)</label>
+                <span class="form-error" id="phoneError"></span>
+              </div>
+
+              <!-- Delegación Field -->
+              <div class="form-group">
+                <select
+                  id="delegacion"
+                  name="delegacion"
+                  class="form-input form-select"
+                  required
+                >
+                  <option value="" disabled selected></option>
+                  <option value="Álvaro Obregón">Álvaro Obregón</option>
+                  <option value="Azcapotzalco">Azcapotzalco</option>
+                  <option value="Benito Juárez">Benito Juárez</option>
+                  <option value="Coyoacán">Coyoacán</option>
+                  <option value="Cuajimalpa">Cuajimalpa</option>
+                  <option value="Cuauhtémoc">Cuauhtémoc</option>
+                  <option value="Gustavo A. Madero">Gustavo A. Madero</option>
+                  <option value="Iztacalco">Iztacalco</option>
+                  <option value="Iztapalapa">Iztapalapa</option>
+                  <option value="Magdalena Contreras">Magdalena Contreras</option>
+                  <option value="Miguel Hidalgo">Miguel Hidalgo</option>
+                  <option value="Milpa Alta">Milpa Alta</option>
+                  <option value="Tláhuac">Tláhuac</option>
+                  <option value="Tlalpan">Tlalpan</option>
+                  <option value="Venustiano Carranza">Venustiano Carranza</option>
+                  <option value="Xochimilco">Xochimilco</option>
+                  <option value="Otro">Otro (fuera de CDMX)</option>
+                </select>
+                <label for="delegacion" class="form-label">Delegación</label>
+                <span class="form-error" id="delegacionError"></span>
+              </div>
+
+              <!-- Ubicación Otro Field (conditional) -->
+              <div class="form-group" id="ubicacionOtroGroup" style="display: none;">
+                <input
+                  type="text"
+                  id="ubicacionOtro"
+                  name="ubicacionOtro"
+                  class="form-input"
+                  placeholder=" "
+                  autocomplete="address-level1"
+                >
+                <label for="ubicacionOtro" class="form-label">Estado / Ubicación</label>
+                <span class="form-error" id="ubicacionOtroError"></span>
+              </div>
+
+              <!-- Colonia Field -->
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="colonia"
+                  name="colonia"
+                  class="form-input"
+                  placeholder=" "
+                  autocomplete="address-level2"
+                  required
+                >
+                <label for="colonia" class="form-label">Colonia</label>
+                <span class="form-error" id="coloniaError"></span>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text">QUIERO QUE ME CONTACTEN</span>
+                <span class="btn-spinner" id="btnSpinner"></span>
+              </button>
+            </form>
+
+            <!-- Success Message -->
+            <div class="alert alert-success" id="successAlert" role="alert" style="display: none;">
+              <span class="alert-icon" aria-hidden="true">✓</span>
+              <h3 class="alert-title">¡Solicitud enviada!</h3>
+              <p class="alert-text">Nos pondremos en contacto contigo a la brevedad.</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="alert alert-error" id="errorAlert" role="alert" style="display: none;">
+              <span class="alert-icon" aria-hidden="true">✕</span>
+              <h3 class="alert-title">No pudimos enviar tu solicitud</h3>
+              <p class="alert-text">Por favor intenta de nuevo. Si el problema persiste, llámanos directamente.</p>
+              <button type="button" class="retry-btn" id="retryBtn">INTENTAR DE NUEVO</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <p class="footer-address">
+          Azares, Buenos Aires, 56003, Tezoyuca, Estado de México
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

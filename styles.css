@@ -1,0 +1,822 @@
+/* ===========================================
+   CSS Variables (Material UI Color Palette)
+   =========================================== */
+:root {
+  /* Primary Colors - Warm Brown */
+  --primary: #6D4C41;
+  --primary-dark: #5D4037;
+  --primary-light: #8D6E63;
+
+  /* Accent Colors */
+  --accent: #FFB300;
+  --accent-dark: #FFA000;
+
+  /* Success/Error */
+  --success: #4CAF50;
+  --success-light: #E8F5E9;
+  --error: #D32F2F;
+  --error-light: #FFEBEE;
+
+  /* Neutrals */
+  --background: #F5F5F5;
+  --surface: #FFFFFF;
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --text-on-primary: #FFFFFF;
+  --border: #E0E0E0;
+
+  /* Material UI Input Colors */
+  --input-bg: #F5F5F5;
+  --input-bg-hover: #EEEEEE;
+  --input-bg-focus: #E0E0E0;
+
+  /* Shadows (Material UI elevation) */
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  --shadow-btn: 0 3px 1px -2px rgba(0,0,0,0.2), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12);
+  --shadow-btn-hover: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+
+  /* Typography */
+  --font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+
+  /* Layout */
+  --max-width: 1200px;
+  --header-height: 64px;
+}
+
+/* ===========================================
+   Reset & Base Styles
+   =========================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
+/* Fade-in animation on page load */
+.page-wrapper {
+  opacity: 0;
+  animation: fadeIn 300ms ease forwards;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================================
+   Header
+   =========================================== */
+.header {
+  background-color: var(--primary);
+  height: var(--header-height);
+  border-bottom: 1px solid var(--primary-dark);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.logo-text {
+  font-family: 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-on-primary);
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-bottom: -2px;
+}
+
+/* ===========================================
+   Main Content - Two Column Layout
+   =========================================== */
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background image layer with blur */
+.main::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background-image: url('assets/hero-bg.png');
+  background-size: cover;
+  background-position: left top;
+  background-repeat: no-repeat;
+  filter: blur(13px);
+  z-index: 0;
+}
+
+/* Warm brown overlay for text readability */
+.main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 1;
+}
+
+@media (min-width: 900px) {
+  .main::before {
+    background: rgba(93, 64, 55, 0.45);
+  }
+}
+
+.main-container {
+  position: relative;
+  z-index: 2;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+/* Desktop: Two columns */
+@media (min-width: 900px) {
+  .main-container {
+    grid-template-columns: 1fr 420px;
+    gap: 4rem;
+    align-items: center;
+  }
+}
+
+/* ===========================================
+   Hero Column (Left side)
+   =========================================== */
+.hero-column {
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .hero-column {
+    text-align: left;
+  }
+}
+
+.headline {
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 900px) {
+  .headline {
+    font-size: 2.5rem;
+    color: #FFFFFF;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+}
+
+.subheadline {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 900px) {
+  .subheadline {
+    font-size: 1.25rem;
+    color: rgba(255,255,255,0.9);
+  }
+}
+
+/* Benefits List */
+.benefits {
+  list-style: none;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: var(--success);
+  color: var(--text-on-primary);
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.benefit-text {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+@media (min-width: 900px) {
+  .benefit-text {
+    color: #FFFFFF;
+  }
+}
+
+/* Trust Badge */
+.trust-badge {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  border-left: 4px solid var(--accent);
+}
+
+@media (min-width: 900px) {
+  .trust-badge {
+    display: inline-flex;
+  }
+}
+
+.trust-icon {
+  font-size: 1.5rem;
+}
+
+.trust-text {
+  font-size: 0.9375rem;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* ===========================================
+   Form Column (Right side)
+   =========================================== */
+.form-column {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+@media (min-width: 900px) {
+  .form-column {
+    margin: 0;
+  }
+}
+
+.form-card {
+  background-color: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-3);
+  padding: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+@media (min-width: 900px) {
+  .form-card {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+
+  .form-card:hover {
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  }
+}
+
+.form-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.form-subtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* ===========================================
+   Material UI Filled Text Field
+   =========================================== */
+.form-group {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.form-input {
+  width: 100%;
+  height: 56px;
+  padding: 24px 16px 6px 16px;
+  font-size: 1rem;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background-color: var(--input-bg);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+  outline: none;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.form-input:hover {
+  background-color: var(--input-bg-hover);
+}
+
+.form-input:focus {
+  background-color: var(--input-bg-focus);
+  border-bottom-color: var(--primary);
+}
+
+.form-input.error {
+  border-bottom-color: var(--error);
+}
+
+.form-input:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Floating Label */
+.form-label {
+  position: absolute;
+  left: 16px;
+  top: 24px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: all 200ms cubic-bezier(0.0, 0, 0.2, 1);
+  transform-origin: left top;
+}
+
+/* Label moves up when input is focused or has content */
+.form-input:focus ~ .form-label,
+.form-input:not(:placeholder-shown) ~ .form-label {
+  top: 8px;
+  transform: scale(0.75);
+  color: var(--primary);
+}
+
+.form-input.error ~ .form-label {
+  color: var(--error);
+}
+
+.form-input:not(:focus):not(:placeholder-shown) ~ .form-label {
+  color: var(--text-secondary);
+}
+
+.form-input:focus ~ .form-label {
+  color: var(--primary);
+}
+
+/* ===========================================
+   Phone Input with Prefix
+   =========================================== */
+.form-group-phone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 18px 4px 0 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--input-bg);
+  border-radius: 4px 0 0 0;
+  border-bottom: 2px solid transparent;
+  user-select: none;
+}
+
+.form-input-phone {
+  flex: 1;
+  border-radius: 0 4px 0 0;
+  padding-left: 4px;
+}
+
+.form-label-phone {
+  left: 56px;
+  top: 24px;
+}
+
+.form-input-phone:focus ~ .form-label-phone,
+.form-input-phone:not(:placeholder-shown) ~ .form-label-phone {
+  left: 56px;
+  top: 8px;
+  transform: scale(0.75);
+}
+
+.form-group-phone:focus-within .phone-prefix {
+  border-bottom-color: var(--primary);
+}
+
+.form-group-phone .form-input.error ~ .phone-prefix,
+.form-input-phone.error + .form-label-phone + .form-error + .phone-prefix {
+  border-bottom-color: var(--error);
+}
+
+/* Fix: make prefix border match input state */
+.form-group-phone:has(.form-input:focus) .phone-prefix {
+  border-bottom-color: var(--primary);
+}
+
+.form-group-phone:has(.form-input.error) .phone-prefix {
+  border-bottom-color: var(--error);
+}
+
+.form-group-phone .form-error {
+  width: 100%;
+}
+
+/* ===========================================
+   Material UI Select Field
+   =========================================== */
+.form-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 40px;
+  background-color: var(--input-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23757575' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 24px;
+}
+
+/* Select without value - label at text position */
+.form-group .form-select:not(.has-value):not(:focus) ~ .form-label {
+  top: 24px;
+  transform: none;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* Select label floats when focused */
+.form-group .form-select:focus ~ .form-label {
+  top: 8px;
+  transform: scale(0.75);
+  color: var(--primary);
+}
+
+/* Select label floats when has value */
+.form-group .form-select.has-value ~ .form-label {
+  top: 8px;
+  transform: scale(0.75);
+  color: var(--text-secondary);
+}
+
+/* Select label when focused AND has value */
+.form-group .form-select.has-value:focus ~ .form-label {
+  color: var(--primary);
+}
+
+/* ===========================================
+   Form Error Message & Hint
+   =========================================== */
+.form-error {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--error);
+  padding: 4px 16px 0;
+  min-height: 1.25rem;
+}
+
+/* Hint state (gray, not error) */
+.form-error.hint {
+  color: var(--text-secondary);
+}
+
+/* ===========================================
+   Material UI Contained Button
+   =========================================== */
+.submit-btn {
+  width: 100%;
+  height: 52px;
+  padding: 0 24px;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-on-primary);
+  background-color: var(--primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.submit-btn:active:not(:disabled) {
+  box-shadow: var(--shadow-1);
+}
+
+.submit-btn:disabled {
+  background-color: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.26);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Ripple Effect */
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.submit-btn:active::before {
+  transform: translate(-50%, -50%) scale(2.5);
+  opacity: 1;
+  transition: transform 0s, opacity 0s;
+}
+
+/* Button Spinner */
+.btn-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: var(--text-on-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.submit-btn.loading .btn-spinner {
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================================
+   Alerts (Success/Error)
+   =========================================== */
+.alert {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-radius: 8px;
+  animation: alertFadeIn 300ms ease forwards;
+}
+
+@keyframes alertFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.alert-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.alert-text {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Success Alert */
+.alert-success {
+  background-color: var(--success-light);
+}
+
+.alert-success .alert-icon {
+  background-color: var(--success);
+  color: var(--text-on-primary);
+}
+
+.alert-success .alert-title {
+  color: #2E7D32;
+}
+
+/* Error Alert */
+.alert-error {
+  background-color: var(--error-light);
+}
+
+.alert-error .alert-icon {
+  background-color: var(--error);
+  color: var(--text-on-primary);
+}
+
+.alert-error .alert-title {
+  color: #C62828;
+}
+
+/* Retry Button (Outlined style) */
+.retry-btn {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--error);
+  background-color: transparent;
+  border: 1px solid var(--error);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.retry-btn:hover {
+  background-color: rgba(211, 47, 47, 0.04);
+}
+
+.retry-btn:active {
+  background-color: rgba(211, 47, 47, 0.12);
+}
+
+/* ===========================================
+   Footer
+   =========================================== */
+.footer {
+  background-color: var(--primary-dark);
+  padding: 1.25rem 1rem;
+}
+
+.footer-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-address {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+/* ===========================================
+   Responsive Adjustments
+   =========================================== */
+
+/* Small phones */
+@media (max-width: 375px) {
+  .headline {
+    font-size: 1.5rem;
+  }
+
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  .form-input {
+    height: 52px;
+  }
+}
+
+/* ===========================================
+   Utility Classes
+   =========================================== */
+.hidden {
+  display: none !important;
+}
+
+/* Loading state for entire form */
+.form-loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Slide down animation for conditional fields */
+.form-group.slide-down {
+  animation: slideDown 300ms ease forwards;
+  overflow: hidden;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 100px;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* Focus visible for accessibility */
+.form-input:focus-visible {
+  outline: none;
+}
+
+.submit-btn:focus-visible,
+.retry-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
