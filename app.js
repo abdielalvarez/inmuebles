@@ -444,15 +444,15 @@
     const data = {
       name: nameInput.value.trim(),
       phone: phoneDigits,
-      delegacion: delegacionSelect.value,
-      colonia: coloniaInput.value.trim(),
+      borough: delegacionSelect.value,
+      neighborhood: coloniaInput.value.trim(),
       service: CONFIG.SERVICE,
       client_slug: CONFIG.CLIENT_SLUG
     };
 
-    // Add ubicación otro if delegación is "Otro"
+    // Add other_location if borough is "Otro"
     if (delegacionSelect.value === 'Otro') {
-      data.ubicacion_otro = ubicacionOtroInput.value.trim();
+      data.other_location = ubicacionOtroInput.value.trim();
     }
 
     try {

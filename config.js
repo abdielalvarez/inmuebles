@@ -5,5 +5,5 @@
 const CONFIG = {
   ENDPOINT: 'https://lead-dchrdsl3pa-uc.a.run.app',
   CLIENT_SLUG: 'axel-herencia-inmuebles',
-  SERVICE: 'herencias'
+  SERVICE: 'inheritance'
 };
