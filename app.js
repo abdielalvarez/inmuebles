@@ -449,7 +449,9 @@
       service: CONFIG.SERVICE,
       partner_slug: CONFIG.PARTNER_SLUG,
       source: CONFIG.SOURCE,
-      domain: window.location.hostname
+      domain: window.location.hostname,
+      state: CONFIG.STATE,
+      country: CONFIG.COUNTRY
     };
 
     // Add other_location if borough is "Otro"
