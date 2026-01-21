@@ -3,7 +3,7 @@
  * Partner-specific settings for this landing page.
  */
 const CONFIG = {
-  ENDPOINT: 'https://us-central1-lead-pipe-backend.cloudfunctions.net/lead',
+  ENDPOINT: 'https://lead-dchrdsl3pa-uc.a.run.app',
   PARTNER_SLUG: 'realestate',
   SERVICE: 'inheritance',
   SOURCE: 'tramitatuherencia-form'
