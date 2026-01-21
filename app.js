@@ -447,7 +447,9 @@
       borough: delegacionSelect.value,
       neighborhood: coloniaInput.value.trim(),
       service: CONFIG.SERVICE,
-      client_slug: CONFIG.CLIENT_SLUG
+      partner_slug: CONFIG.PARTNER_SLUG,
+      source: CONFIG.SOURCE,
+      domain: window.location.hostname
     };
 
     // Add other_location if borough is "Otro"
