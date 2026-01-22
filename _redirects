@@ -1,1 +1,2 @@
-# No redirects needed - all domains serve this site directly
+https://conectaconinmobiliarias.com/* https://gestionatuherencia.conectaconinmobiliarias.com/:splat 301!
+https://www.conectaconinmobiliarias.com/* https://gestionatuherencia.conectaconinmobiliarias.com/:splat 301!
