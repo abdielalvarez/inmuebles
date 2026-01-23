@@ -327,8 +327,8 @@ body {
 }
 
 .form-title {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
   text-align: center;
