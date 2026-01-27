@@ -555,12 +555,19 @@ body {
   font-size: 0.75rem;
   color: var(--error);
   padding: 4px 16px 0;
-  min-height: 1.25rem;
 }
 
 /* Hint state (gray, not error) */
 .form-error.hint {
   color: var(--text-secondary);
+}
+
+/* Form hint text */
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 4px 16px 0;
 }
 
 /* ===========================================
@@ -828,4 +835,94 @@ body {
 .retry-btn:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* ===========================================
+   Autocomplete Component
+   =========================================== */
+.autocomplete-container {
+  position: relative;
+}
+
+.autocomplete-input {
+  padding-right: 40px;
+}
+
+.autocomplete-arrow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 56px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: transform 200ms ease;
+}
+
+.autocomplete-arrow:hover {
+  color: var(--text-primary);
+}
+
+.autocomplete-container.open .autocomplete-arrow {
+  transform: rotate(180deg);
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: 0 0 4px 4px;
+  box-shadow: var(--shadow-2);
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  transition: max-height 200ms ease, opacity 200ms ease;
+}
+
+.autocomplete-container.open .autocomplete-dropdown {
+  max-height: 240px;
+  overflow-y: auto;
+  opacity: 1;
+}
+
+.autocomplete-option {
+  padding: 12px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.autocomplete-option:hover,
+.autocomplete-option.highlighted {
+  background: var(--input-bg-hover);
+}
+
+.autocomplete-option.selected {
+  background: rgba(109, 76, 65, 0.08);
+  color: var(--primary);
+}
+
+.autocomplete-option mark {
+  background: transparent;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.autocomplete-no-results,
+.autocomplete-custom-hint {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }

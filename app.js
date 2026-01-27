@@ -19,17 +19,24 @@
   // Form fields
   const nameInput = document.getElementById('name');
   const phoneInput = document.getElementById('phone');
-  const delegacionSelect = document.getElementById('delegacion');
-  const ubicacionOtroGroup = document.getElementById('ubicacionOtroGroup');
-  const ubicacionOtroInput = document.getElementById('ubicacionOtro');
-  const coloniaInput = document.getElementById('colonia');
+  const delegacionContainer = document.getElementById('delegacionContainer');
+  const delegacionInput = document.getElementById('delegacion');
+
+  // Delegaciones list for autocomplete
+  const DELEGACIONES = [
+    'Álvaro Obregón', 'Azcapotzalco', 'Benito Juárez', 'Coyoacán',
+    'Cuajimalpa', 'Cuauhtémoc', 'Gustavo A. Madero', 'Iztacalco',
+    'Iztapalapa', 'Magdalena Contreras', 'Miguel Hidalgo', 'Milpa Alta',
+    'Tláhuac', 'Tlalpan', 'Venustiano Carranza', 'Xochimilco', 'Otro'
+  ];
+
+  // Autocomplete instance (initialized later)
+  let delegacionAutocomplete;
 
   // Error elements
   const nameError = document.getElementById('nameError');
   const phoneError = document.getElementById('phoneError');
   const delegacionError = document.getElementById('delegacionError');
-  const ubicacionOtroError = document.getElementById('ubicacionOtroError');
-  const coloniaError = document.getElementById('coloniaError');
 
   // ===========================================
   // Valid Mexican Mobile Prefixes
@@ -202,6 +209,13 @@
   }
 
   /**
+   * Normalize text by removing accents/diacritics and converting to lowercase
+   */
+  function normalizeText(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  /**
    * Format phone number as: XX XXXX XXXX
    */
   function formatPhoneNumber(digits) {
@@ -253,6 +267,252 @@
   }
 
   // ===========================================
+  // Autocomplete Component
+  // ===========================================
+
+  class Autocomplete {
+    constructor(container, options) {
+      this.container = container;
+      this.input = container.querySelector('.autocomplete-input');
+      this.arrow = container.querySelector('.autocomplete-arrow');
+      this.dropdown = container.querySelector('.autocomplete-dropdown');
+      this.options = options.options || [];
+      this.freeSolo = options.freeSolo !== false;
+      this.onChange = options.onChange || (() => {});
+      this.isOpen = false;
+      this.selectedValue = '';
+      this.highlightedIndex = -1;
+      this.filteredOptions = [...this.options];
+
+      this.init();
+    }
+
+    init() {
+      this.renderOptions();
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      // Input events
+      this.input.addEventListener('input', () => this.handleInput());
+      this.input.addEventListener('focus', () => this.open());
+      this.input.addEventListener('blur', (e) => this.handleBlur(e));
+      this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+      // Arrow button
+      this.arrow.addEventListener('click', () => this.toggle());
+      this.arrow.addEventListener('mousedown', (e) => e.preventDefault());
+
+      // Dropdown option clicks
+      this.dropdown.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const option = e.target.closest('.autocomplete-option');
+        if (option) {
+          this.selectValue(option.dataset.value);
+        }
+      });
+    }
+
+    handleInput() {
+      const query = this.input.value.toLowerCase().trim();
+      this.filter(query);
+      this.open();
+
+      // If typing and value changed, notify
+      const isCustom = !this.options.includes(this.input.value);
+      this.onChange(this.input.value, isCustom);
+    }
+
+    handleBlur(e) {
+      // Delay close to allow click on options
+      setTimeout(() => {
+        this.close();
+        // Finalize value on blur
+        const value = this.input.value.trim();
+        if (value) {
+          const isCustom = !this.options.includes(value);
+          this.selectedValue = value;
+          this.onChange(value, isCustom);
+        }
+      }, 150);
+    }
+
+    handleKeydown(e) {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          if (!this.isOpen) {
+            this.open();
+          } else {
+            this.highlightNext();
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          this.highlightPrev();
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (this.isOpen && this.highlightedIndex >= 0) {
+            const highlighted = this.dropdown.querySelector('.highlighted');
+            if (highlighted) {
+              this.selectValue(highlighted.dataset.value);
+            }
+          } else if (this.input.value.trim()) {
+            // Accept custom value
+            const value = this.input.value.trim();
+            const isCustom = !this.options.includes(value);
+            this.selectedValue = value;
+            this.onChange(value, isCustom);
+            this.close();
+          }
+          break;
+        case 'Escape':
+          this.close();
+          break;
+        case 'Tab':
+          this.close();
+          break;
+      }
+    }
+
+    filter(query) {
+      if (!query) {
+        this.filteredOptions = [...this.options];
+      } else {
+        const normalizedQuery = normalizeText(query);
+        this.filteredOptions = this.options.filter(opt =>
+          normalizeText(opt).includes(normalizedQuery)
+        );
+      }
+      this.highlightedIndex = -1;
+      this.renderOptions(query);
+    }
+
+    renderOptions(query = '') {
+      this.dropdown.innerHTML = '';
+
+      if (this.filteredOptions.length === 0 && !this.freeSolo) {
+        const noResults = document.createElement('li');
+        noResults.className = 'autocomplete-no-results';
+        noResults.textContent = 'Sin resultados';
+        this.dropdown.appendChild(noResults);
+        return;
+      }
+
+      this.filteredOptions.forEach((opt, index) => {
+        const li = document.createElement('li');
+        li.className = 'autocomplete-option';
+        li.dataset.value = opt;
+        li.setAttribute('role', 'option');
+
+        // Highlight matching text (using normalized comparison for accent-insensitive matching)
+        if (query) {
+          const normalizedOpt = normalizeText(opt);
+          const normalizedQuery = normalizeText(query);
+          const matchIndex = normalizedOpt.indexOf(normalizedQuery);
+          if (matchIndex >= 0) {
+            const before = opt.slice(0, matchIndex);
+            const match = opt.slice(matchIndex, matchIndex + query.length);
+            const after = opt.slice(matchIndex + query.length);
+            li.innerHTML = `${before}<mark>${match}</mark>${after}`;
+          } else {
+            li.textContent = opt;
+          }
+        } else {
+          li.textContent = opt;
+        }
+
+        if (opt === this.selectedValue) {
+          li.classList.add('selected');
+        }
+
+        this.dropdown.appendChild(li);
+      });
+    }
+
+    highlightNext() {
+      const items = this.dropdown.querySelectorAll('.autocomplete-option');
+      if (items.length === 0) return;
+
+      if (this.highlightedIndex >= 0) {
+        items[this.highlightedIndex].classList.remove('highlighted');
+      }
+
+      this.highlightedIndex = (this.highlightedIndex + 1) % items.length;
+      items[this.highlightedIndex].classList.add('highlighted');
+      items[this.highlightedIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    highlightPrev() {
+      const items = this.dropdown.querySelectorAll('.autocomplete-option');
+      if (items.length === 0) return;
+
+      if (this.highlightedIndex >= 0) {
+        items[this.highlightedIndex].classList.remove('highlighted');
+      }
+
+      this.highlightedIndex = this.highlightedIndex <= 0
+        ? items.length - 1
+        : this.highlightedIndex - 1;
+
+      items[this.highlightedIndex].classList.add('highlighted');
+      items[this.highlightedIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    selectValue(value) {
+      this.selectedValue = value;
+      this.input.value = value;
+      this.close();
+
+      const isCustom = !this.options.includes(value);
+      this.onChange(value, isCustom);
+    }
+
+    open() {
+      if (this.isOpen) return;
+      this.isOpen = true;
+      this.container.classList.add('open');
+      this.input.setAttribute('aria-expanded', 'true');
+    }
+
+    close() {
+      if (!this.isOpen) return;
+      this.isOpen = false;
+      this.container.classList.remove('open');
+      this.input.setAttribute('aria-expanded', 'false');
+      this.highlightedIndex = -1;
+      // Remove all highlights
+      this.dropdown.querySelectorAll('.highlighted').forEach(el => el.classList.remove('highlighted'));
+    }
+
+    toggle() {
+      if (this.isOpen) {
+        this.close();
+      } else {
+        this.filter('');
+        this.open();
+        this.input.focus();
+      }
+    }
+
+    getValue() {
+      return this.selectedValue || this.input.value.trim();
+    }
+
+    setValue(value) {
+      this.selectedValue = value;
+      this.input.value = value;
+    }
+
+    reset() {
+      this.selectedValue = '';
+      this.input.value = '';
+      this.close();
+    }
+  }
+
+  // ===========================================
   // Form Validation
   // ===========================================
 
@@ -280,25 +540,6 @@
     return { valid: true, error: '' };
   }
 
-  /**
-   * Validate ubicación otro field (only if delegación is "Otro")
-   */
-  function validateUbicacionOtro(value, delegacion) {
-    if (delegacion === 'Otro' && value.trim().length === 0) {
-      return { valid: false, error: 'Ingresa tu estado o ubicación' };
-    }
-    return { valid: true, error: '' };
-  }
-
-  /**
-   * Validate colonia field
-   */
-  function validateColonia(value) {
-    if (value.trim().length === 0) {
-      return { valid: false, error: 'La colonia es requerida' };
-    }
-    return { valid: true, error: '' };
-  }
 
   /**
    * Show error for a field
@@ -343,33 +584,15 @@
     }
 
     // Validate delegación
-    const delegacionResult = validateDelegacion(delegacionSelect.value);
+    const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
+    const delegacionResult = validateDelegacion(delegacionValue);
     if (!delegacionResult.valid) {
-      showFieldError(delegacionSelect, delegacionError, delegacionResult.error);
+      showFieldError(delegacionInput, delegacionError, delegacionResult.error);
       isValid = false;
     } else {
-      clearFieldError(delegacionSelect, delegacionError);
+      clearFieldError(delegacionInput, delegacionError);
     }
 
-    // Validate ubicación otro (if applicable)
-    if (delegacionSelect.value === 'Otro') {
-      const ubicacionResult = validateUbicacionOtro(ubicacionOtroInput.value, delegacionSelect.value);
-      if (!ubicacionResult.valid) {
-        showFieldError(ubicacionOtroInput, ubicacionOtroError, ubicacionResult.error);
-        isValid = false;
-      } else {
-        clearFieldError(ubicacionOtroInput, ubicacionOtroError);
-      }
-    }
-
-    // Validate colonia
-    const coloniaResult = validateColonia(coloniaInput.value);
-    if (!coloniaResult.valid) {
-      showFieldError(coloniaInput, coloniaError, coloniaResult.error);
-      isValid = false;
-    } else {
-      clearFieldError(coloniaInput, coloniaError);
-    }
 
     return isValid;
   }
@@ -407,10 +630,10 @@
     errorAlert.style.display = 'none';
     successAlert.style.display = 'block';
     form.reset();
-    // Reset select label state
-    delegacionSelect.classList.remove('has-value');
-    // Hide ubicación otro field
-    ubicacionOtroGroup.style.display = 'none';
+    // Reset autocomplete state
+    if (delegacionAutocomplete) {
+      delegacionAutocomplete.reset();
+    }
   }
 
   /**
@@ -440,12 +663,13 @@
    */
   async function submitForm() {
     const phoneDigits = stripNonDigits(phoneInput.value);
+    const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
+    const isKnownDelegacion = DELEGACIONES.includes(delegacionValue) && delegacionValue !== 'Otro';
 
     const data = {
       name: nameInput.value.trim(),
       phone: phoneDigits,
-      borough: delegacionSelect.value,
-      neighborhood: coloniaInput.value.trim(),
+      borough: isKnownDelegacion ? delegacionValue : 'Otro',
       service: CONFIG.SERVICE,
       partner_slug: CONFIG.PARTNER_SLUG,
       source: CONFIG.SOURCE,
@@ -454,9 +678,9 @@
       country: CONFIG.COUNTRY
     };
 
-    // Add other_location if borough is "Otro"
-    if (delegacionSelect.value === 'Otro') {
-      data.other_location = ubicacionOtroInput.value.trim();
+    // Add other_location if custom value or "Otro" selected
+    if (!isKnownDelegacion) {
+      data.other_location = delegacionValue;
     }
 
     try {
@@ -556,54 +780,14 @@
     }
   });
 
-  // Delegación change: show/hide ubicación otro field
-  delegacionSelect.addEventListener('change', function(e) {
-    // Add class for floating label
-    if (e.target.value) {
-      e.target.classList.add('has-value');
-    } else {
-      e.target.classList.remove('has-value');
+  // Delegación change handler - called by autocomplete
+  function handleDelegacionChange(value, isCustom) {
+    // Clear error when value changes
+    if (value) {
+      clearFieldError(delegacionInput, delegacionError);
     }
 
-    // Show/hide ubicación otro
-    if (e.target.value === 'Otro') {
-      ubicacionOtroGroup.style.display = 'block';
-      ubicacionOtroGroup.classList.add('slide-down');
-      ubicacionOtroInput.required = true;
-    } else {
-      ubicacionOtroGroup.style.display = 'none';
-      ubicacionOtroGroup.classList.remove('slide-down');
-      ubicacionOtroInput.required = false;
-      ubicacionOtroInput.value = '';
-      clearFieldError(ubicacionOtroInput, ubicacionOtroError);
-    }
-  });
-
-  // Clear errors on input
-  nameInput.addEventListener('input', function() {
-    if (nameInput.value.trim().length >= 2) {
-      clearFieldError(nameInput, nameError);
-    }
-  });
-
-  coloniaInput.addEventListener('input', function() {
-    if (coloniaInput.value.trim().length > 0) {
-      clearFieldError(coloniaInput, coloniaError);
-    }
-  });
-
-  ubicacionOtroInput.addEventListener('input', function() {
-    if (ubicacionOtroInput.value.trim().length > 0) {
-      clearFieldError(ubicacionOtroInput, ubicacionOtroError);
-    }
-  });
-
-  delegacionSelect.addEventListener('change', function() {
-    if (delegacionSelect.value) {
-      clearFieldError(delegacionSelect, delegacionError);
-    }
-  });
-
+  }
   // Form submission
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -643,12 +827,13 @@
     console.error('CONFIG is not defined. Please create config.js file.');
   }
 
-  // Initialize select state on page load
-  // Ensure select doesn't have has-value class if empty
-  if (delegacionSelect.value && delegacionSelect.value !== '') {
-    delegacionSelect.classList.add('has-value');
-  } else {
-    delegacionSelect.classList.remove('has-value');
+  // Initialize delegación autocomplete
+  if (delegacionContainer) {
+    delegacionAutocomplete = new Autocomplete(delegacionContainer, {
+      options: DELEGACIONES,
+      freeSolo: true,
+      onChange: handleDelegacionChange
+    });
   }
 
 })();

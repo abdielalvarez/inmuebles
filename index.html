@@ -106,64 +106,28 @@
                 <span class="form-error" id="phoneError"></span>
               </div>
 
-              <!-- Delegación Field -->
-              <div class="form-group">
-                <select
+              <!-- Delegación Field (Autocomplete) -->
+              <div class="form-group autocomplete-container" id="delegacionContainer">
+                <input
+                  type="text"
                   id="delegacion"
                   name="delegacion"
-                  class="form-input form-select"
+                  class="form-input autocomplete-input"
+                  placeholder=" "
+                  autocomplete="off"
+                  role="combobox"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-controls="delegacion-listbox"
                   required
                 >
-                  <option value="" disabled selected></option>
-                  <option value="Álvaro Obregón">Álvaro Obregón</option>
-                  <option value="Azcapotzalco">Azcapotzalco</option>
-                  <option value="Benito Juárez">Benito Juárez</option>
-                  <option value="Coyoacán">Coyoacán</option>
-                  <option value="Cuajimalpa">Cuajimalpa</option>
-                  <option value="Cuauhtémoc">Cuauhtémoc</option>
-                  <option value="Gustavo A. Madero">Gustavo A. Madero</option>
-                  <option value="Iztacalco">Iztacalco</option>
-                  <option value="Iztapalapa">Iztapalapa</option>
-                  <option value="Magdalena Contreras">Magdalena Contreras</option>
-                  <option value="Miguel Hidalgo">Miguel Hidalgo</option>
-                  <option value="Milpa Alta">Milpa Alta</option>
-                  <option value="Tláhuac">Tláhuac</option>
-                  <option value="Tlalpan">Tlalpan</option>
-                  <option value="Venustiano Carranza">Venustiano Carranza</option>
-                  <option value="Xochimilco">Xochimilco</option>
-                  <option value="Otro">Otro (fuera de CDMX)</option>
-                </select>
-                <label for="delegacion" class="form-label">Delegación u Otro</label>
+                <label for="delegacion" class="form-label">Delegación / Municipio</label>
+                <button type="button" class="autocomplete-arrow" tabindex="-1" aria-label="Abrir opciones">
+                  <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </button>
+                <ul id="delegacion-listbox" class="autocomplete-dropdown" role="listbox"></ul>
                 <span class="form-error" id="delegacionError"></span>
-              </div>
-
-              <!-- Ubicación Otro Field (conditional) -->
-              <div class="form-group" id="ubicacionOtroGroup" style="display: none;">
-                <input
-                  type="text"
-                  id="ubicacionOtro"
-                  name="ubicacionOtro"
-                  class="form-input"
-                  placeholder=" "
-                  autocomplete="address-level1"
-                >
-                <label for="ubicacionOtro" class="form-label">Ubicación (o Municipio)</label>
-                <span class="form-error" id="ubicacionOtroError"></span>
-              </div>
-
-              <!-- Colonia Field -->
-              <div class="form-group">
-                <input
-                  type="text"
-                  id="colonia"
-                  name="colonia"
-                  class="form-input"
-                  placeholder=" "
-                  autocomplete="address-level2"
-                  required
-                >
-                <label for="colonia" class="form-label">Colonia</label>
-                <span class="form-error" id="coloniaError"></span>
+                <span class="form-hint">CDMX: Delegación. Otros estados: Municipio.</span>
               </div>
 
               <!-- Submit Button -->
@@ -196,7 +160,7 @@
     <footer class="footer">
       <div class="footer-container">
         <p class="footer-address">
-          Azares, Buenos Aires, 56003, Tezoyuca, Estado de México
+          Kiwi 13, Rinconada de Aragón 55140, Ecatepec de Morelos, Estado de México
         </p>
       </div>
     </footer>
