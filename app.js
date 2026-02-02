@@ -835,14 +835,15 @@
       has_deed: toAnswer(tieneEscrituraSelect.value),
       is_mortgaged: toAnswer(estaHipotecadaSelect.value),
       is_heir: toAnswer(esHerederoSelect.value),
-      service_type: servicioValue,
+      service_category: servicioValue,
       borough: boroughValue,
       state: CONFIG.STATE,
       country: CONFIG.COUNTRY,
       service: CONFIG.SERVICE,
-      partner_slug: CONFIG.PARTNER_SLUG,
-      source: CONFIG.SOURCE,
-      domain: window.location.hostname
+      source: {
+        type: CONFIG.SOURCE_TYPE,
+        domain: window.location.hostname
+      }
     };
 
     try {

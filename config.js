@@ -4,9 +4,8 @@
  */
 const CONFIG = {
   ENDPOINT: 'https://lead-dchrdsl3pa-uc.a.run.app',
-  PARTNER_SLUG: 'realestate',
   SERVICE: 'inheritance',
-  SOURCE: 'gestionatuherencia-form',
+  SOURCE_TYPE: 'gestionatuherencia-form',
   STATE: 'CDMX',
   COUNTRY: 'Mexico'
 };
