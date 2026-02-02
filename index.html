@@ -121,13 +121,100 @@
                   aria-controls="delegacion-listbox"
                   required
                 >
-                <label for="delegacion" class="form-label">Delegación / Municipio</label>
+                <label for="delegacion" class="form-label">Alcaldía / Municipio</label>
                 <button type="button" class="autocomplete-arrow" tabindex="-1" aria-label="Abrir opciones">
                   <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
                 </button>
                 <ul id="delegacion-listbox" class="autocomplete-dropdown" role="listbox"></ul>
                 <span class="form-error" id="delegacionError"></span>
-                <span class="form-hint">CDMX: Delegación. Otros estados: Municipio.</span>
+                <span class="form-hint">CDMX: Alcaldía. Otros estados: Municipio.</span>
+              </div>
+
+              <!-- Es Propietario Field -->
+              <div class="form-group">
+                <select id="es_propietario" name="es_propietario" class="form-input form-select" required>
+                  <option value="" disabled selected></option>
+                  <option value="si">Sí</option>
+                  <option value="no">No</option>
+                  <option value="no_se">No sé</option>
+                </select>
+                <label for="es_propietario" class="form-label">¿Eres propietario del inmueble?</label>
+                <span class="form-error" id="esPropietarioError"></span>
+              </div>
+
+              <!-- Es Heredero Field -->
+              <div class="form-group">
+                <select id="es_heredero" name="es_heredero" class="form-input form-select" required>
+                  <option value="" disabled selected></option>
+                  <option value="si">Sí</option>
+                  <option value="no">No</option>
+                  <option value="no_se">No sé</option>
+                </select>
+                <label for="es_heredero" class="form-label">¿Eres heredero del inmueble?</label>
+                <span class="form-error" id="esHerederoError"></span>
+              </div>
+
+              <!-- Tiene Escritura Field -->
+              <div class="form-group">
+                <select id="tiene_escritura" name="tiene_escritura" class="form-input form-select" required>
+                  <option value="" disabled selected></option>
+                  <option value="si">Sí</option>
+                  <option value="no">No</option>
+                  <option value="no_se">No sé</option>
+                </select>
+                <label for="tiene_escritura" class="form-label">¿Tienes escritura pública?</label>
+                <span class="form-error" id="tieneEscrituraError"></span>
+              </div>
+
+              <!-- Está Hipotecada Field -->
+              <div class="form-group">
+                <select id="esta_hipotecada" name="esta_hipotecada" class="form-input form-select" required>
+                  <option value="" disabled selected></option>
+                  <option value="si">Sí</option>
+                  <option value="no">No</option>
+                  <option value="no_se">No sé</option>
+                </select>
+                <label for="esta_hipotecada" class="form-label">¿Está hipotecada tu propiedad?</label>
+                <span class="form-error" id="estaHipotecadaError"></span>
+              </div>
+
+              <!-- Servicio Field (Autocomplete) -->
+              <div class="form-group autocomplete-container" id="servicioContainer">
+                <input
+                  type="text"
+                  id="servicio"
+                  name="servicio"
+                  class="form-input autocomplete-input"
+                  placeholder=" "
+                  autocomplete="off"
+                  role="combobox"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-controls="servicio-listbox"
+                  required
+                >
+                <label for="servicio" class="form-label">Servicio que necesitas</label>
+                <button type="button" class="autocomplete-arrow" tabindex="-1" aria-label="Abrir opciones">
+                  <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </button>
+                <ul id="servicio-listbox" class="autocomplete-dropdown" role="listbox"></ul>
+                <span class="form-error" id="servicioError"></span>
+              </div>
+
+              <!-- Intención Field -->
+              <div class="form-group">
+                <textarea
+                  id="intencion"
+                  name="intencion"
+                  class="form-input form-textarea"
+                  placeholder=" "
+                  required
+                  rows="3"
+                  maxlength="300"
+                ></textarea>
+                <label for="intencion" class="form-label">¿Qué te gustaría que hagamos con tu propiedad?</label>
+                <span class="form-error" id="intencionError"></span>
+                <span class="char-counter" id="intencionCounter">0/300</span>
               </div>
 
               <!-- Submit Button -->

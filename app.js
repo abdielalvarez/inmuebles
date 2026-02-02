@@ -19,23 +19,61 @@
   // Form fields
   const nameInput = document.getElementById('name');
   const phoneInput = document.getElementById('phone');
+  const intencionInput = document.getElementById('intencion');
+  const esPropietarioSelect = document.getElementById('es_propietario');
+  const tieneEscrituraSelect = document.getElementById('tiene_escritura');
+  const estaHipotecadaSelect = document.getElementById('esta_hipotecada');
+  const esHerederoSelect = document.getElementById('es_heredero');
+  const servicioContainer = document.getElementById('servicioContainer');
+  const servicioInput = document.getElementById('servicio');
   const delegacionContainer = document.getElementById('delegacionContainer');
   const delegacionInput = document.getElementById('delegacion');
 
   // Delegaciones list for autocomplete
   const DELEGACIONES = [
-    'Álvaro Obregón', 'Azcapotzalco', 'Benito Juárez', 'Coyoacán',
-    'Cuajimalpa', 'Cuauhtémoc', 'Gustavo A. Madero', 'Iztacalco',
-    'Iztapalapa', 'Magdalena Contreras', 'Miguel Hidalgo', 'Milpa Alta',
-    'Tláhuac', 'Tlalpan', 'Venustiano Carranza', 'Xochimilco', 'Otro'
+    'Álvaro Obregón',
+    'Azcapotzalco',
+    'Benito Juárez',
+    'Coyoacán',
+    'Cuajimalpa de Morelos',
+    'Cuauhtémoc',
+    'Gustavo A. Madero',
+    'Iztacalco',
+    'Iztapalapa',
+    'La Magdalena Contreras',
+    'Miguel Hidalgo',
+    'Milpa Alta',
+    'Tláhuac',
+    'Tlalpan',
+    'Venustiano Carranza',
+    'Xochimilco',
+    'Otro'
   ];
 
-  // Autocomplete instance (initialized later)
+  // Servicios list for autocomplete
+  const SERVICIOS = [
+    'Regularización del inmueble',
+    'Asesoría Legal',
+    'Venta del inmueble',
+    'Renta del inmueble',
+    'Testamento',
+    'Donación del inmueble',
+    'Otros servicios legales'
+  ];
+
+  // Autocomplete instances (initialized later)
   let delegacionAutocomplete;
+  let servicioAutocomplete;
 
   // Error elements
   const nameError = document.getElementById('nameError');
   const phoneError = document.getElementById('phoneError');
+  const intencionError = document.getElementById('intencionError');
+  const esPropietarioError = document.getElementById('esPropietarioError');
+  const tieneEscrituraError = document.getElementById('tieneEscrituraError');
+  const estaHipotecadaError = document.getElementById('estaHipotecadaError');
+  const esHerederoError = document.getElementById('esHerederoError');
+  const servicioError = document.getElementById('servicioError');
   const delegacionError = document.getElementById('delegacionError');
 
   // ===========================================
@@ -393,10 +431,6 @@
       this.dropdown.innerHTML = '';
 
       if (this.filteredOptions.length === 0 && !this.freeSolo) {
-        const noResults = document.createElement('li');
-        noResults.className = 'autocomplete-no-results';
-        noResults.textContent = 'Sin resultados';
-        this.dropdown.appendChild(noResults);
         return;
       }
 
@@ -531,6 +565,37 @@
   }
 
   /**
+   * Validate intención field
+   */
+  function validateIntencion(value) {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return { valid: false, error: 'Este campo es requerido' };
+    }
+    return { valid: true, error: '' };
+  }
+
+  /**
+   * Validate select field (yes/no/don't know)
+   */
+  function validateSelect(value) {
+    if (!value) {
+      return { valid: false, error: 'Selecciona una opción' };
+    }
+    return { valid: true, error: '' };
+  }
+
+  /**
+   * Validate servicio field
+   */
+  function validateServicio(value) {
+    if (!value) {
+      return { valid: false, error: 'Selecciona un servicio' };
+    }
+    return { valid: true, error: '' };
+  }
+
+  /**
    * Validate delegación field
    */
   function validateDelegacion(value) {
@@ -583,6 +648,61 @@
       clearFieldError(phoneInput, phoneError);
     }
 
+    // Validate intención
+    const intencionResult = validateIntencion(intencionInput.value);
+    if (!intencionResult.valid) {
+      showFieldError(intencionInput, intencionError, intencionResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(intencionInput, intencionError);
+    }
+
+    // Validate es_propietario
+    const esPropietarioResult = validateSelect(esPropietarioSelect.value);
+    if (!esPropietarioResult.valid) {
+      showFieldError(esPropietarioSelect, esPropietarioError, esPropietarioResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(esPropietarioSelect, esPropietarioError);
+    }
+
+    // Validate tiene_escritura
+    const tieneEscrituraResult = validateSelect(tieneEscrituraSelect.value);
+    if (!tieneEscrituraResult.valid) {
+      showFieldError(tieneEscrituraSelect, tieneEscrituraError, tieneEscrituraResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(tieneEscrituraSelect, tieneEscrituraError);
+    }
+
+    // Validate esta_hipotecada
+    const estaHipotecadaResult = validateSelect(estaHipotecadaSelect.value);
+    if (!estaHipotecadaResult.valid) {
+      showFieldError(estaHipotecadaSelect, estaHipotecadaError, estaHipotecadaResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(estaHipotecadaSelect, estaHipotecadaError);
+    }
+
+    // Validate es_heredero
+    const esHerederoResult = validateSelect(esHerederoSelect.value);
+    if (!esHerederoResult.valid) {
+      showFieldError(esHerederoSelect, esHerederoError, esHerederoResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(esHerederoSelect, esHerederoError);
+    }
+
+    // Validate servicio
+    const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
+    const servicioResult = validateServicio(servicioValue);
+    if (!servicioResult.valid) {
+      showFieldError(servicioInput, servicioError, servicioResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(servicioInput, servicioError);
+    }
+
     // Validate delegación
     const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
     const delegacionResult = validateDelegacion(delegacionValue);
@@ -595,6 +715,37 @@
 
 
     return isValid;
+  }
+
+  /**
+   * Check if all required fields have values (without showing errors)
+   * Used to enable/disable submit button
+   */
+  function isFormComplete() {
+    const nameValue = nameInput.value.trim();
+    const phoneDigits = stripNonDigits(phoneInput.value);
+    const intencionValue = intencionInput.value.trim();
+    const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
+    const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
+
+    return (
+      nameValue.length >= 2 &&
+      phoneDigits.length === 10 &&
+      intencionValue.length >= 1 &&
+      delegacionValue.length > 0 &&
+      servicioValue.length > 0 &&
+      esPropietarioSelect.value !== '' &&
+      tieneEscrituraSelect.value !== '' &&
+      estaHipotecadaSelect.value !== '' &&
+      esHerederoSelect.value !== ''
+    );
+  }
+
+  /**
+   * Update submit button enabled/disabled state
+   */
+  function updateSubmitButtonState() {
+    submitBtn.disabled = !isFormComplete();
   }
 
   // ===========================================
@@ -630,9 +781,16 @@
     errorAlert.style.display = 'none';
     successAlert.style.display = 'block';
     form.reset();
-    // Reset autocomplete state
+    // Reset select has-value classes
+    [esPropietarioSelect, tieneEscrituraSelect, estaHipotecadaSelect, esHerederoSelect].forEach(select => {
+      select.classList.remove('has-value');
+    });
+    // Reset autocomplete states
     if (delegacionAutocomplete) {
       delegacionAutocomplete.reset();
+    }
+    if (servicioAutocomplete) {
+      servicioAutocomplete.reset();
     }
   }
 
@@ -663,25 +821,29 @@
    */
   async function submitForm() {
     const phoneDigits = stripNonDigits(phoneInput.value);
-    const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
-    const isKnownDelegacion = DELEGACIONES.includes(delegacionValue) && delegacionValue !== 'Otro';
+    const boroughValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
+    const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
+
+    // Transform select values: si → "yes", no → "no", no_se → "unknown"
+    const toAnswer = (val) => val === 'si' ? 'yes' : val === 'no' ? 'no' : 'unknown';
 
     const data = {
       name: nameInput.value.trim(),
-      phone: phoneDigits,
-      borough: isKnownDelegacion ? delegacionValue : 'Otro',
+      phone: '52' + phoneDigits,
+      intention: intencionInput.value.trim(),
+      is_owner: toAnswer(esPropietarioSelect.value),
+      has_deed: toAnswer(tieneEscrituraSelect.value),
+      is_mortgaged: toAnswer(estaHipotecadaSelect.value),
+      is_heir: toAnswer(esHerederoSelect.value),
+      service_type: servicioValue,
+      borough: boroughValue,
+      state: CONFIG.STATE,
+      country: CONFIG.COUNTRY,
       service: CONFIG.SERVICE,
       partner_slug: CONFIG.PARTNER_SLUG,
       source: CONFIG.SOURCE,
-      domain: window.location.hostname,
-      state: CONFIG.STATE,
-      country: CONFIG.COUNTRY
+      domain: window.location.hostname
     };
-
-    // Add other_location if custom value or "Otro" selected
-    if (!isKnownDelegacion) {
-      data.other_location = delegacionValue;
-    }
 
     try {
       const response = await fetch(CONFIG.ENDPOINT, {
@@ -735,6 +897,8 @@
       // 10 digits or empty - clear hint
       clearFieldError(phoneInput, phoneError);
     }
+
+    updateSubmitButtonState();
   });
 
   // Phone blur: validate and show error in red if invalid
@@ -780,14 +944,50 @@
     }
   });
 
+  // Select field change handlers - add has-value class for floating label
+  [esPropietarioSelect, tieneEscrituraSelect, estaHipotecadaSelect, esHerederoSelect].forEach(select => {
+    select.addEventListener('change', function() {
+      if (this.value) {
+        this.classList.add('has-value');
+      } else {
+        this.classList.remove('has-value');
+      }
+      updateSubmitButtonState();
+    });
+  });
+
+  // Name input handler for submit button state
+  nameInput.addEventListener('input', updateSubmitButtonState);
+
+  // Intencion input handler - update counter and submit button state
+  const intencionCounter = document.getElementById('intencionCounter');
+  intencionInput.addEventListener('input', function() {
+    const len = this.value.length;
+    intencionCounter.textContent = len + '/300';
+    updateSubmitButtonState();
+  });
+
   // Delegación change handler - called by autocomplete
   function handleDelegacionChange(value, isCustom) {
     // Clear error when value changes
     if (value) {
       clearFieldError(delegacionInput, delegacionError);
     }
-
+    updateSubmitButtonState();
   }
+
+  // Servicio change handler - called by autocomplete
+  function handleServicioChange(value, isCustom) {
+    // Clear error when value changes
+    if (value) {
+      clearFieldError(servicioInput, servicioError);
+    }
+    updateSubmitButtonState();
+  }
+
+  // Initialize submit button as disabled
+  submitBtn.disabled = true;
+
   // Form submission
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -825,6 +1025,15 @@
   // Check if CONFIG is defined
   if (typeof CONFIG === 'undefined') {
     console.error('CONFIG is not defined. Please create config.js file.');
+  }
+
+  // Initialize servicio autocomplete
+  if (servicioContainer) {
+    servicioAutocomplete = new Autocomplete(servicioContainer, {
+      options: SERVICIOS,
+      freeSolo: false,
+      onChange: handleServicioChange
+    });
   }
 
   // Initialize delegación autocomplete

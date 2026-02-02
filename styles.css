@@ -69,6 +69,7 @@ body {
   color: var(--text-primary);
   background-color: var(--background);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Fade-in animation on page load */
@@ -146,10 +147,10 @@ body {
 .main::after {
   content: '';
   position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-image: url('assets/hero-bg.png');
   background-size: cover;
   background-position: left top;
@@ -168,6 +169,7 @@ body {
   bottom: 0;
   background: rgba(93, 64, 55, 0.45);
   z-index: 1;
+  clip-path: inset(0);
 }
 
 .main-container {
@@ -186,7 +188,11 @@ body {
   .main-container {
     grid-template-columns: 1fr 420px;
     gap: 4rem;
-    align-items: center;
+    align-items: start;
+  }
+
+  .hero-column {
+    padding-top: 20vh;
   }
 }
 
@@ -415,6 +421,71 @@ body {
 }
 
 /* ===========================================
+   Textarea variant
+   =========================================== */
+.form-group:has(.form-textarea) {
+  position: relative;
+}
+
+/* Background bar to mask scrolling text behind label */
+.form-group:has(.form-textarea)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: var(--input-bg);
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 4px 4px 0 0;
+}
+
+.form-group:has(.form-textarea:hover)::before {
+  background: var(--input-bg-hover);
+}
+
+.form-group:has(.form-textarea:focus)::before {
+  background: var(--input-bg-focus);
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 120px;
+  max-height: 150px;
+  padding-top: 28px;
+  resize: none;
+  line-height: 1.4;
+  overflow-y: auto;
+}
+
+/* Label for textarea */
+.form-textarea ~ .form-label {
+  top: 6px;
+  transform: scale(0.75);
+  transform-origin: left top;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.form-textarea:focus ~ .form-label {
+  color: var(--primary);
+}
+
+.form-textarea:not(:focus) ~ .form-label {
+  color: var(--text-secondary);
+}
+
+/* Character counter */
+.char-counter {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ===========================================
    Phone Input with Prefix
    =========================================== */
 .form-group-phone {
@@ -518,6 +589,25 @@ body {
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 24px;
+}
+
+.form-select option {
+  background-color: #fff;
+  color: var(--text-primary);
+  padding: 12px 16px;
+}
+
+.form-select option[value=""][disabled] {
+  display: none;
+}
+
+.form-select option:checked {
+  background-color: rgba(109, 76, 65, 0.08);
+  color: var(--primary);
+}
+
+.form-select option:hover {
+  background-color: var(--input-bg-hover);
 }
 
 /* Select without value - label at text position */
@@ -878,7 +968,7 @@ body {
   left: 0;
   right: 0;
   max-height: 0;
-  overflow: hidden;
+  overflow-y: scroll;
   background: var(--surface);
   border-radius: 0 0 4px 4px;
   box-shadow: var(--shadow-2);
@@ -887,13 +977,32 @@ body {
   margin: 0;
   padding: 0;
   opacity: 0;
+  pointer-events: none;
   transition: max-height 200ms ease, opacity 200ms ease;
 }
 
+.autocomplete-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-track {
+  background: var(--input-bg);
+  border-radius: 0 0 4px 0;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: 4px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--text-primary);
+}
+
 .autocomplete-container.open .autocomplete-dropdown {
-  max-height: 240px;
-  overflow-y: auto;
+  max-height: 300px;
   opacity: 1;
+  pointer-events: auto;
 }
 
 .autocomplete-option {
