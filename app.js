@@ -830,16 +830,19 @@
     const data = {
       name: nameInput.value.trim(),
       phone: '52' + phoneDigits,
-      intention: intencionInput.value.trim(),
-      is_owner: toAnswer(esPropietarioSelect.value),
-      has_deed: toAnswer(tieneEscrituraSelect.value),
-      is_mortgaged: toAnswer(estaHipotecadaSelect.value),
-      is_heir: toAnswer(esHerederoSelect.value),
-      service_category: servicioValue,
       borough: boroughValue,
       state: CONFIG.STATE,
       country: CONFIG.COUNTRY,
       service: CONFIG.SERVICE,
+      service_category: CONFIG.SERVICE_CATEGORY, // "real_property" from CONFIG
+      information: {                              // NEW: nested object for user answers
+        service_type: servicioValue,              // User's answer to "Servicio que necesitas"
+        intention: intencionInput.value.trim(),
+        is_owner: toAnswer(esPropietarioSelect.value),
+        is_heir: toAnswer(esHerederoSelect.value),
+        has_deed: toAnswer(tieneEscrituraSelect.value),
+        is_mortgaged: toAnswer(estaHipotecadaSelect.value)
+      },
       source: {
         type: CONFIG.SOURCE_TYPE,
         domain: window.location.hostname

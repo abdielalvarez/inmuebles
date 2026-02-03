@@ -5,6 +5,7 @@
 const CONFIG = {
   ENDPOINT: 'https://lead-dchrdsl3pa-uc.a.run.app',
   SERVICE: 'inheritance',
+  SERVICE_CATEGORY: 'real_property', // Asset type for this landing
   SOURCE_TYPE: 'gestionatuherencia-form',
   STATE: 'CDMX',
   COUNTRY: 'Mexico'
