@@ -52,16 +52,8 @@
     'Otro'
   ];
 
-  // Servicios list for autocomplete
-  const SERVICIOS = [
-    'Regularización del inmueble',
-    'Asesoría Legal',
-    'Venta del inmueble',
-    'Renta del inmueble',
-    'Testamento',
-    'Donación del inmueble',
-    'Otros servicios legales'
-  ];
+  // Case types list for autocomplete (loaded from API)
+  let caseTypesData = [];
 
   // Autocomplete instances (initialized later)
   let estadoAutocomplete;
@@ -277,6 +269,21 @@
     }
   }
 
+  /**
+   * Fetch case types from the API
+   */
+  async function fetchCaseTypes() {
+    try {
+      const response = await fetch(`${CONFIG.CATALOGS_API}/case-types`);
+      if (!response.ok) throw new Error('Failed to fetch case types');
+      const data = await response.json();
+      return data.case_types || [];
+    } catch (error) {
+      console.error('Error fetching case types:', error);
+      return [];
+    }
+  }
+
   // ===========================================
   // Phone Validation & Formatting
   // ===========================================
@@ -359,6 +366,7 @@
       this.options = options.options || [];
       this.freeSolo = options.freeSolo !== false;
       this.onChange = options.onChange || (() => {});
+      this.onBlurInvalid = options.onBlurInvalid || (() => {});
       this.isOpen = false;
       this.selectedValue = '';
       this.highlightedIndex = -1;
@@ -398,6 +406,9 @@
       this.filter(query);
       this.open();
 
+      // Clear error class immediately when user starts typing
+      this.input.classList.remove('error');
+
       // If typing and value changed, notify
       const isCustom = !this.options.includes(this.input.value);
       this.onChange(this.input.value, isCustom);
@@ -409,6 +420,14 @@
         this.close();
         // Finalize value on blur
         const value = this.input.value.trim();
+
+        // Validate: if freeSolo is false and value is not empty and not in options → invalid
+        if (value && !this.freeSolo && !this.options.includes(value)) {
+          this.onBlurInvalid(value);
+          return;
+        }
+
+        // Valid value - proceed as normal
         if (value) {
           const isCustom = !this.options.includes(value);
           this.selectedValue = value;
@@ -472,7 +491,14 @@
     renderOptions(query = '') {
       this.dropdown.innerHTML = '';
 
-      if (this.filteredOptions.length === 0 && !this.freeSolo) {
+      // Show "Sin resultados" if no matches and user typed something
+      if (this.filteredOptions.length === 0 && query) {
+        const li = document.createElement('li');
+        li.className = 'autocomplete-no-results';
+        li.textContent = 'Sin resultados';
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-disabled', 'true');
+        this.dropdown.appendChild(li);
         return;
       }
 
@@ -910,9 +936,11 @@
       state: estadoValue,
       country: CONFIG.COUNTRY,
       service: CONFIG.SERVICE,
-      service_category: CONFIG.SERVICE_CATEGORY, // "real_property" from CONFIG
-      information: {                              // NEW: nested object for user answers
-        service_type: servicioValue,              // User's answer to "Servicio que necesitas"
+      service_id: CONFIG.SERVICE_ID,
+      service_category: CONFIG.SERVICE_CATEGORY,
+      category_id: CONFIG.CATEGORY_ID,
+      information: {
+        case_type: servicioValue,
         intention: intencionInput.value.trim(),
         is_owner: toAnswer(esPropietarioSelect.value),
         is_heir: toAnswer(esHerederoSelect.value),
@@ -1054,6 +1082,16 @@
       clearFieldError(estadoInput, estadoError);
     }
 
+    // Update delegación label based on state
+    const delegacionLabel = document.getElementById('delegacionLabel');
+    if (delegacionLabel) {
+      if (value === 'Ciudad de México') {
+        delegacionLabel.textContent = 'Alcaldía';
+      } else {
+        delegacionLabel.textContent = 'Municipio';
+      }
+    }
+
     // Find the selected state and load its municipalities
     const selectedState = statesData.find(s => s.state_name === value);
     if (selectedState) {
@@ -1068,6 +1106,11 @@
     updateSubmitButtonState();
   }
 
+  // Estado blur invalid handler - called when user leaves input with invalid value
+  function handleEstadoBlurInvalid(value) {
+    showFieldError(estadoInput, estadoError, 'Selecciona un estado válido');
+  }
+
   // Delegación change handler - called by autocomplete
   function handleDelegacionChange(value, isCustom) {
     // Clear error when value changes
@@ -1077,6 +1120,11 @@
     updateSubmitButtonState();
   }
 
+  // Delegación blur invalid handler - called when user leaves input with invalid value
+  function handleDelegacionBlurInvalid(value) {
+    showFieldError(delegacionInput, delegacionError, 'Selecciona una opción válida');
+  }
+
   // Servicio change handler - called by autocomplete
   function handleServicioChange(value, isCustom) {
     // Clear error when value changes
@@ -1084,6 +1132,11 @@
       clearFieldError(servicioInput, servicioError);
     }
     updateSubmitButtonState();
+  }
+
+  // Servicio blur invalid handler - called when user leaves input with invalid value
+  function handleServicioBlurInvalid(value) {
+    showFieldError(servicioInput, servicioError, 'Selecciona un servicio válido');
   }
 
   // Initialize submit button as disabled
@@ -1128,13 +1181,36 @@
     console.error('CONFIG is not defined. Please create config.js file.');
   }
 
-  // Initialize servicio autocomplete
-  if (servicioContainer) {
-    servicioAutocomplete = new Autocomplete(servicioContainer, {
-      options: SERVICIOS,
-      freeSolo: false,
-      onChange: handleServicioChange
-    });
+  /**
+   * Initialize case types autocomplete from API
+   */
+  async function initializeCaseTypesAutocomplete() {
+    // Fetch case types from API
+    caseTypesData = await fetchCaseTypes();
+
+    // Hardcoded fallback if API fails
+    const fallbackCaseTypes = [
+      'Regularización del inmueble',
+      'Asesoría Legal',
+      'Venta del inmueble',
+      'Renta del inmueble',
+      'Testamento',
+      'Donación del inmueble',
+      'Otros servicios legales'
+    ];
+
+    const caseTypeNames = caseTypesData.length > 0
+      ? caseTypesData.map(ct => ct.name)
+      : fallbackCaseTypes;
+
+    if (servicioContainer) {
+      servicioAutocomplete = new Autocomplete(servicioContainer, {
+        options: caseTypeNames,
+        freeSolo: false,
+        onChange: handleServicioChange,
+        onBlurInvalid: handleServicioBlurInvalid
+      });
+    }
   }
 
   /**
@@ -1151,7 +1227,8 @@
         delegacionAutocomplete = new Autocomplete(delegacionContainer, {
           options: DELEGACIONES,
           freeSolo: true,
-          onChange: handleDelegacionChange
+          onChange: handleDelegacionChange,
+          onBlurInvalid: handleDelegacionBlurInvalid
         });
       }
       return;
@@ -1168,7 +1245,8 @@
       estadoAutocomplete = new Autocomplete(estadoContainer, {
         options: stateNames,
         freeSolo: false,
-        onChange: handleEstadoChange
+        onChange: handleEstadoChange,
+        onBlurInvalid: handleEstadoBlurInvalid
       });
 
       // Set default value if found
@@ -1187,7 +1265,8 @@
         delegacionAutocomplete = new Autocomplete(delegacionContainer, {
           options: municipalityNames,
           freeSolo: true,
-          onChange: handleDelegacionChange
+          onChange: handleDelegacionChange,
+          onBlurInvalid: handleDelegacionBlurInvalid
         });
       }
     } else {
@@ -1196,13 +1275,15 @@
         delegacionAutocomplete = new Autocomplete(delegacionContainer, {
           options: DELEGACIONES,
           freeSolo: true,
-          onChange: handleDelegacionChange
+          onChange: handleDelegacionChange,
+          onBlurInvalid: handleDelegacionBlurInvalid
         });
       }
     }
   }
 
-  // Initialize geo autocompletes on page load
+  // Initialize autocompletes on page load
+  initializeCaseTypesAutocomplete();
   initializeGeoAutocompletes();
 
 })();
