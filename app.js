@@ -26,6 +26,8 @@
   const esHerederoSelect = document.getElementById('es_heredero');
   const servicioContainer = document.getElementById('servicioContainer');
   const servicioInput = document.getElementById('servicio');
+  const estadoContainer = document.getElementById('estadoContainer');
+  const estadoInput = document.getElementById('estado');
   const delegacionContainer = document.getElementById('delegacionContainer');
   const delegacionInput = document.getElementById('delegacion');
 
@@ -62,8 +64,13 @@
   ];
 
   // Autocomplete instances (initialized later)
+  let estadoAutocomplete;
   let delegacionAutocomplete;
   let servicioAutocomplete;
+
+  // Geo data (loaded from API)
+  let statesData = [];
+  let selectedStateId = null;
 
   // Error elements
   const nameError = document.getElementById('nameError');
@@ -74,6 +81,7 @@
   const estaHipotecadaError = document.getElementById('estaHipotecadaError');
   const esHerederoError = document.getElementById('esHerederoError');
   const servicioError = document.getElementById('servicioError');
+  const estadoError = document.getElementById('estadoError');
   const delegacionError = document.getElementById('delegacionError');
 
   // ===========================================
@@ -234,6 +242,40 @@
     '995', '996', // Escárcega
     '997', '999', // Mérida city
   ];
+
+  // ===========================================
+  // Geo API Functions
+  // ===========================================
+
+  /**
+   * Fetch all states from the API
+   */
+  async function fetchStates() {
+    try {
+      const response = await fetch(`${CONFIG.GEO_API}/states`);
+      if (!response.ok) throw new Error('Failed to fetch states');
+      const data = await response.json();
+      return data.states || [];
+    } catch (error) {
+      console.error('Error fetching states:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetch municipalities for a specific state
+   */
+  async function fetchMunicipalities(stateId) {
+    try {
+      const response = await fetch(`${CONFIG.GEO_API}/municipalities?state_id=${stateId}`);
+      if (!response.ok) throw new Error('Failed to fetch municipalities');
+      const data = await response.json();
+      return data.municipalities || [];
+    } catch (error) {
+      console.error('Error fetching municipalities:', error);
+      return [];
+    }
+  }
 
   // ===========================================
   // Phone Validation & Formatting
@@ -544,6 +586,14 @@
       this.input.value = '';
       this.close();
     }
+
+    setOptions(newOptions) {
+      this.options = newOptions;
+      this.filteredOptions = [...newOptions];
+      this.selectedValue = '';
+      this.input.value = '';
+      this.renderOptions();
+    }
   }
 
   // ===========================================
@@ -596,11 +646,21 @@
   }
 
   /**
+   * Validate estado field
+   */
+  function validateEstado(value) {
+    if (!value) {
+      return { valid: false, error: 'Selecciona un estado' };
+    }
+    return { valid: true, error: '' };
+  }
+
+  /**
    * Validate delegación field
    */
   function validateDelegacion(value) {
     if (!value) {
-      return { valid: false, error: 'Selecciona una delegación' };
+      return { valid: false, error: 'Selecciona una alcaldía/municipio' };
     }
     return { valid: true, error: '' };
   }
@@ -703,6 +763,16 @@
       clearFieldError(servicioInput, servicioError);
     }
 
+    // Validate estado
+    const estadoValue = estadoAutocomplete ? estadoAutocomplete.getValue() : '';
+    const estadoResult = validateEstado(estadoValue);
+    if (!estadoResult.valid) {
+      showFieldError(estadoInput, estadoError, estadoResult.error);
+      isValid = false;
+    } else {
+      clearFieldError(estadoInput, estadoError);
+    }
+
     // Validate delegación
     const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
     const delegacionResult = validateDelegacion(delegacionValue);
@@ -712,7 +782,6 @@
     } else {
       clearFieldError(delegacionInput, delegacionError);
     }
-
 
     return isValid;
   }
@@ -725,6 +794,7 @@
     const nameValue = nameInput.value.trim();
     const phoneDigits = stripNonDigits(phoneInput.value);
     const intencionValue = intencionInput.value.trim();
+    const estadoValue = estadoAutocomplete ? estadoAutocomplete.getValue() : '';
     const delegacionValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
     const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
 
@@ -732,6 +802,7 @@
       nameValue.length >= 2 &&
       phoneDigits.length === 10 &&
       intencionValue.length >= 1 &&
+      estadoValue.length > 0 &&
       delegacionValue.length > 0 &&
       servicioValue.length > 0 &&
       esPropietarioSelect.value !== '' &&
@@ -786,6 +857,10 @@
       select.classList.remove('has-value');
     });
     // Reset autocomplete states
+    if (estadoAutocomplete) {
+      // Re-initialize with default state after reset
+      initializeGeoAutocompletes();
+    }
     if (delegacionAutocomplete) {
       delegacionAutocomplete.reset();
     }
@@ -821,6 +896,7 @@
    */
   async function submitForm() {
     const phoneDigits = stripNonDigits(phoneInput.value);
+    const estadoValue = estadoAutocomplete ? estadoAutocomplete.getValue() : '';
     const boroughValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
     const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
 
@@ -831,7 +907,7 @@
       name: nameInput.value.trim(),
       phone: '52' + phoneDigits,
       borough: boroughValue,
-      state: CONFIG.STATE,
+      state: estadoValue,
       country: CONFIG.COUNTRY,
       service: CONFIG.SERVICE,
       service_category: CONFIG.SERVICE_CATEGORY, // "real_property" from CONFIG
@@ -971,6 +1047,27 @@
     updateSubmitButtonState();
   });
 
+  // Estado change handler - called by autocomplete
+  async function handleEstadoChange(value, isCustom) {
+    // Clear error when value changes
+    if (value) {
+      clearFieldError(estadoInput, estadoError);
+    }
+
+    // Find the selected state and load its municipalities
+    const selectedState = statesData.find(s => s.state_name === value);
+    if (selectedState) {
+      selectedStateId = selectedState.id;
+      const municipalities = await fetchMunicipalities(selectedState.id);
+      const municipalityNames = municipalities.map(m => m.municipality_name);
+      if (delegacionAutocomplete) {
+        delegacionAutocomplete.setOptions(municipalityNames);
+      }
+    }
+
+    updateSubmitButtonState();
+  }
+
   // Delegación change handler - called by autocomplete
   function handleDelegacionChange(value, isCustom) {
     // Clear error when value changes
@@ -1040,13 +1137,72 @@
     });
   }
 
-  // Initialize delegación autocomplete
-  if (delegacionContainer) {
-    delegacionAutocomplete = new Autocomplete(delegacionContainer, {
-      options: DELEGACIONES,
-      freeSolo: true,
-      onChange: handleDelegacionChange
-    });
+  /**
+   * Initialize geo autocompletes with dynamic data from API
+   */
+  async function initializeGeoAutocompletes() {
+    // Fetch all states
+    statesData = await fetchStates();
+
+    if (statesData.length === 0) {
+      // Fallback to hardcoded DELEGACIONES if API fails
+      console.warn('Failed to load states from API, using fallback');
+      if (delegacionContainer) {
+        delegacionAutocomplete = new Autocomplete(delegacionContainer, {
+          options: DELEGACIONES,
+          freeSolo: true,
+          onChange: handleDelegacionChange
+        });
+      }
+      return;
+    }
+
+    // Get state names for autocomplete
+    const stateNames = statesData.map(s => s.state_name);
+
+    // Find default state (Ciudad de México)
+    const defaultState = statesData.find(s => s.state_name === CONFIG.DEFAULT_STATE_NAME);
+
+    // Initialize estado autocomplete
+    if (estadoContainer) {
+      estadoAutocomplete = new Autocomplete(estadoContainer, {
+        options: stateNames,
+        freeSolo: false,
+        onChange: handleEstadoChange
+      });
+
+      // Set default value if found
+      if (defaultState) {
+        estadoAutocomplete.setValue(defaultState.state_name);
+        selectedStateId = defaultState.id;
+      }
+    }
+
+    // Load municipalities for default state
+    if (defaultState) {
+      const municipalities = await fetchMunicipalities(defaultState.id);
+      const municipalityNames = municipalities.map(m => m.municipality_name);
+
+      if (delegacionContainer) {
+        delegacionAutocomplete = new Autocomplete(delegacionContainer, {
+          options: municipalityNames,
+          freeSolo: true,
+          onChange: handleDelegacionChange
+        });
+      }
+    } else {
+      // Fallback to hardcoded DELEGACIONES
+      if (delegacionContainer) {
+        delegacionAutocomplete = new Autocomplete(delegacionContainer, {
+          options: DELEGACIONES,
+          freeSolo: true,
+          onChange: handleDelegacionChange
+        });
+      }
+    }
   }
+
+  // Initialize geo autocompletes on page load
+  initializeGeoAutocompletes();
 
 })();
