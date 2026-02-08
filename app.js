@@ -284,6 +284,21 @@
     }
   }
 
+  /**
+   * Fetch boolean options from the API
+   */
+  async function fetchBooleanOptions() {
+    try {
+      const response = await fetch(`${CONFIG.CATALOGS_API}/boolean-options`);
+      if (!response.ok) throw new Error('Failed to fetch boolean options');
+      const data = await response.json();
+      return data.boolean_options || [];
+    } catch (error) {
+      console.error('Error fetching boolean options:', error);
+      return [];
+    }
+  }
+
   // ===========================================
   // Phone Validation & Formatting
   // ===========================================
@@ -926,9 +941,7 @@
     const boroughValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
     const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
 
-    // Transform select values: si → "yes", no → "no", no_se → "unknown"
-    const toAnswer = (val) => val === 'si' ? 'yes' : val === 'no' ? 'no' : 'unknown';
-
+    // Select values are now API slugs (yes, no, unknown) - no conversion needed
     const data = {
       name: nameInput.value.trim(),
       phone: '52' + phoneDigits,
@@ -942,10 +955,10 @@
       information: {
         case_type: servicioValue,
         intention: intencionInput.value.trim(),
-        is_owner: toAnswer(esPropietarioSelect.value),
-        is_heir: toAnswer(esHerederoSelect.value),
-        has_deed: toAnswer(tieneEscrituraSelect.value),
-        is_mortgaged: toAnswer(estaHipotecadaSelect.value)
+        is_owner: esPropietarioSelect.value,
+        is_heir: esHerederoSelect.value,
+        has_deed: tieneEscrituraSelect.value,
+        is_mortgaged: estaHipotecadaSelect.value
       },
       source: {
         type: CONFIG.SOURCE_TYPE,
@@ -1282,8 +1295,57 @@
     }
   }
 
-  // Initialize autocompletes on page load
+  /**
+   * Populate a select dropdown with boolean options from API
+   */
+  function populateBooleanSelect(selectElement, options) {
+    // Clear existing options except the placeholder
+    while (selectElement.options.length > 1) {
+      selectElement.remove(1);
+    }
+
+    // Add options from API
+    options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt.slug;
+      option.textContent = opt.name;
+      selectElement.appendChild(option);
+    });
+  }
+
+  /**
+   * Initialize boolean option dropdowns from API
+   */
+  async function initializeBooleanOptions() {
+    const booleanOptions = await fetchBooleanOptions();
+
+    // Fallback if API fails
+    const fallbackOptions = [
+      { slug: 'yes', name: 'Sí' },
+      { slug: 'no', name: 'No' },
+      { slug: 'unknown', name: 'No sabe' }
+    ];
+
+    const options = booleanOptions.length > 0 ? booleanOptions : fallbackOptions;
+
+    // Populate all boolean select dropdowns
+    const booleanSelects = [
+      esPropietarioSelect,
+      tieneEscrituraSelect,
+      estaHipotecadaSelect,
+      esHerederoSelect
+    ];
+
+    booleanSelects.forEach(select => {
+      if (select) {
+        populateBooleanSelect(select, options);
+      }
+    });
+  }
+
+  // Initialize autocompletes and boolean options on page load
   initializeCaseTypesAutocomplete();
   initializeGeoAutocompletes();
+  initializeBooleanOptions();
 
 })();

@@ -114,7 +114,12 @@
                   name="estado"
                   class="form-input autocomplete-input"
                   placeholder=" "
-                  autocomplete="off"
+                  autocomplete="nope"
+                  autocapitalize="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                  data-lpignore="true"
+                  data-form-type="other"
                   role="combobox"
                   aria-expanded="false"
                   aria-haspopup="listbox"
@@ -137,14 +142,19 @@
                   name="delegacion"
                   class="form-input autocomplete-input"
                   placeholder=" "
-                  autocomplete="off"
+                  autocomplete="nope"
+                  autocapitalize="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                  data-lpignore="true"
+                  data-form-type="other"
                   role="combobox"
                   aria-expanded="false"
                   aria-haspopup="listbox"
                   aria-controls="delegacion-listbox"
                   required
                 >
-                <label for="delegacion" class="form-label">Alcaldía / Municipio</label>
+                <label for="delegacion" class="form-label" id="delegacionLabel">Alcaldía</label>
                 <button type="button" class="autocomplete-arrow" tabindex="-1" aria-label="Abrir opciones">
                   <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
                 </button>
@@ -156,9 +166,7 @@
               <div class="form-group">
                 <select id="es_propietario" name="es_propietario" class="form-input form-select" required>
                   <option value="" disabled selected></option>
-                  <option value="si">Sí</option>
-                  <option value="no">No</option>
-                  <option value="no_se">No sé</option>
+                  <!-- Options populated dynamically from API -->
                 </select>
                 <label for="es_propietario" class="form-label">¿Eres propietario del inmueble?</label>
                 <span class="form-error" id="esPropietarioError"></span>
@@ -168,9 +176,7 @@
               <div class="form-group">
                 <select id="es_heredero" name="es_heredero" class="form-input form-select" required>
                   <option value="" disabled selected></option>
-                  <option value="si">Sí</option>
-                  <option value="no">No</option>
-                  <option value="no_se">No sé</option>
+                  <!-- Options populated dynamically from API -->
                 </select>
                 <label for="es_heredero" class="form-label">¿Eres heredero del inmueble?</label>
                 <span class="form-error" id="esHerederoError"></span>
@@ -180,9 +186,7 @@
               <div class="form-group">
                 <select id="tiene_escritura" name="tiene_escritura" class="form-input form-select" required>
                   <option value="" disabled selected></option>
-                  <option value="si">Sí</option>
-                  <option value="no">No</option>
-                  <option value="no_se">No sé</option>
+                  <!-- Options populated dynamically from API -->
                 </select>
                 <label for="tiene_escritura" class="form-label">¿Tienes escritura pública?</label>
                 <span class="form-error" id="tieneEscrituraError"></span>
@@ -192,9 +196,7 @@
               <div class="form-group">
                 <select id="esta_hipotecada" name="esta_hipotecada" class="form-input form-select" required>
                   <option value="" disabled selected></option>
-                  <option value="si">Sí</option>
-                  <option value="no">No</option>
-                  <option value="no_se">No sé</option>
+                  <!-- Options populated dynamically from API -->
                 </select>
                 <label for="esta_hipotecada" class="form-label">¿Está hipotecada tu propiedad?</label>
                 <span class="form-error" id="estaHipotecadaError"></span>
@@ -208,7 +210,12 @@
                   name="servicio"
                   class="form-input autocomplete-input"
                   placeholder=" "
-                  autocomplete="off"
+                  autocomplete="nope"
+                  autocapitalize="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                  data-lpignore="true"
+                  data-form-type="other"
                   role="combobox"
                   aria-expanded="false"
                   aria-haspopup="listbox"
