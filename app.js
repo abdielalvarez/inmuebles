@@ -62,7 +62,15 @@
 
   // Geo data (loaded from API)
   let statesData = [];
+  let municipalitiesData = [];
   let selectedStateId = null;
+  let selectedMunicipalityId = null;
+
+  // Case types data (loaded from API)
+  let caseTypesMap = {}; // Map slug -> id for lookup
+
+  // Boolean options data (loaded from API)
+  let booleanOptionsMap = {}; // Map slug -> id for lookup
 
   // Error elements
   const nameError = document.getElementById('nameError');
@@ -933,7 +941,7 @@
   // ===========================================
 
   /**
-   * Submit form data to endpoint
+   * Submit form data to endpoint (v2 - dynamic templates)
    */
   async function submitForm() {
     const phoneDigits = stripNonDigits(phoneInput.value);
@@ -941,28 +949,40 @@
     const boroughValue = delegacionAutocomplete ? delegacionAutocomplete.getValue() : '';
     const servicioValue = servicioAutocomplete ? servicioAutocomplete.getValue() : '';
 
-    // Select values are now API slugs (yes, no, unknown) - no conversion needed
+    // Find the selected municipality ID from the municipalities data
+    const selectedMunicipality = municipalitiesData.find(m => m.municipality_name === boroughValue);
+    const municipalityId = selectedMunicipality ? selectedMunicipality.id : null;
+
+    // Find the selected case type ID from the case types data
+    const selectedCaseType = caseTypesData.find(ct => ct.name === servicioValue);
+    const caseTypeId = selectedCaseType ? selectedCaseType.id : null;
+
+    // Map boolean option slugs to IDs
+    const isOwnerSlug = esPropietarioSelect.value;
+    const isHeirSlug = esHerederoSelect.value;
+    const hasDeedSlug = tieneEscrituraSelect.value;
+    const isMortgagedSlug = estaHipotecadaSelect.value;
+
+    // New v2 payload structure using template_information
     const data = {
-      name: nameInput.value.trim(),
-      phone: '52' + phoneDigits,
-      borough: boroughValue,
-      state: estadoValue,
-      country: CONFIG.COUNTRY,
-      service: CONFIG.SERVICE,
-      service_id: CONFIG.SERVICE_ID,
-      service_category: CONFIG.SERVICE_CATEGORY,
+      partner_id: CONFIG.PARTNER_ID,
       category_id: CONFIG.CATEGORY_ID,
-      information: {
-        case_type: servicioValue,
-        intention: intencionInput.value.trim(),
-        is_owner: esPropietarioSelect.value,
-        is_heir: esHerederoSelect.value,
-        has_deed: tieneEscrituraSelect.value,
-        is_mortgaged: estaHipotecadaSelect.value
-      },
+      lang: CONFIG.LANG || 'es',
       source: {
         type: CONFIG.SOURCE_TYPE,
         domain: window.location.hostname
+      },
+      template_information: {
+        name: nameInput.value.trim(),
+        phone: '52' + phoneDigits,
+        state_id: selectedStateId,
+        municipality_id: municipalityId,
+        case_type: caseTypeId,
+        is_owner: booleanOptionsMap[isOwnerSlug] || null,
+        is_heir: booleanOptionsMap[isHeirSlug] || null,
+        has_deed: booleanOptionsMap[hasDeedSlug] || null,
+        is_mortgaged: booleanOptionsMap[isMortgagedSlug] || null,
+        intention: intencionInput.value.trim()
       }
     };
 
@@ -1095,25 +1115,26 @@
       clearFieldError(estadoInput, estadoError);
     }
 
-    // Update delegación label based on state
-    const delegacionLabel = document.getElementById('delegacionLabel');
-    if (delegacionLabel) {
-      if (value === 'Ciudad de México') {
-        delegacionLabel.textContent = 'Alcaldía';
-      } else {
-        delegacionLabel.textContent = 'Municipio';
-      }
-    }
-
-    // Find the selected state and load its municipalities
+    // Find the selected state and update label + load municipalities
     const selectedState = statesData.find(s => s.state_name === value);
     if (selectedState) {
       selectedStateId = selectedState.id;
-      const municipalities = await fetchMunicipalities(selectedState.id);
-      const municipalityNames = municipalities.map(m => m.municipality_name);
+
+      // Update delegación label based on state's subdivision label
+      const delegacionLabel = document.getElementById('delegacionLabel');
+      if (delegacionLabel) {
+        delegacionLabel.textContent = selectedState.subdivision_label_es || 'Municipio';
+      }
+
+      // Load municipalities for this state
+      municipalitiesData = await fetchMunicipalities(selectedState.id);
+      const municipalityNames = municipalitiesData.map(m => m.municipality_name);
       if (delegacionAutocomplete) {
         delegacionAutocomplete.setOptions(municipalityNames);
       }
+
+      // Reset selected municipality
+      selectedMunicipalityId = null;
     }
 
     updateSubmitButtonState();
@@ -1129,6 +1150,12 @@
     // Clear error when value changes
     if (value) {
       clearFieldError(delegacionInput, delegacionError);
+
+      // Update selected municipality ID
+      const selectedMunicipality = municipalitiesData.find(m => m.municipality_name === value);
+      if (selectedMunicipality) {
+        selectedMunicipalityId = selectedMunicipality.id;
+      }
     }
     updateSubmitButtonState();
   }
@@ -1201,20 +1228,23 @@
     // Fetch case types from API
     caseTypesData = await fetchCaseTypes();
 
-    // Hardcoded fallback if API fails
+    // Hardcoded fallback if API fails (with IDs for v2 submission)
     const fallbackCaseTypes = [
-      'Regularización del inmueble',
-      'Asesoría Legal',
-      'Venta del inmueble',
-      'Renta del inmueble',
-      'Testamento',
-      'Donación del inmueble',
-      'Otros servicios legales'
+      { id: 1, slug: 'regularizacion', name: 'Regularización del inmueble' },
+      { id: 2, slug: 'asesoria', name: 'Asesoría Legal' },
+      { id: 3, slug: 'venta', name: 'Venta del inmueble' },
+      { id: 4, slug: 'renta', name: 'Renta del inmueble' },
+      { id: 5, slug: 'testamento', name: 'Testamento' },
+      { id: 6, slug: 'donacion', name: 'Donación del inmueble' },
+      { id: 7, slug: 'otros', name: 'Otros servicios legales' }
     ];
 
-    const caseTypeNames = caseTypesData.length > 0
-      ? caseTypesData.map(ct => ct.name)
-      : fallbackCaseTypes;
+    // Use fallback if API fails
+    if (caseTypesData.length === 0) {
+      caseTypesData = fallbackCaseTypes;
+    }
+
+    const caseTypeNames = caseTypesData.map(ct => ct.name);
 
     if (servicioContainer) {
       servicioAutocomplete = new Autocomplete(servicioContainer, {
@@ -1271,8 +1301,8 @@
 
     // Load municipalities for default state
     if (defaultState) {
-      const municipalities = await fetchMunicipalities(defaultState.id);
-      const municipalityNames = municipalities.map(m => m.municipality_name);
+      municipalitiesData = await fetchMunicipalities(defaultState.id);
+      const municipalityNames = municipalitiesData.map(m => m.municipality_name);
 
       if (delegacionContainer) {
         delegacionAutocomplete = new Autocomplete(delegacionContainer, {
@@ -1321,12 +1351,17 @@
 
     // Fallback if API fails
     const fallbackOptions = [
-      { slug: 'yes', name: 'Sí' },
-      { slug: 'no', name: 'No' },
-      { slug: 'unknown', name: 'No sabe' }
+      { id: 1, slug: 'yes', name: 'Sí' },
+      { id: 2, slug: 'no', name: 'No' },
+      { id: 3, slug: 'unknown', name: 'No sabe' }
     ];
 
     const options = booleanOptions.length > 0 ? booleanOptions : fallbackOptions;
+
+    // Build slug -> id mapping for submission
+    options.forEach(opt => {
+      booleanOptionsMap[opt.slug] = opt.id;
+    });
 
     // Populate all boolean select dropdowns
     const booleanSelects = [
