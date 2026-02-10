@@ -3,9 +3,8 @@
  * Partner-specific settings for this landing page.
  */
 const CONFIG = {
-  // API Endpoints
-  ENDPOINT: 'https://leadpipe-server.onrender.com/lead/v2',  // Dynamic template endpoint
-  ENDPOINT_LEGACY: 'https://leadpipe-server.onrender.com/lead',  // Legacy endpoint (fallback)
+  // API Endpoints (unified - /lead handles both legacy and dynamic payloads)
+  ENDPOINT: 'https://leadpipe-server.onrender.com/lead',
   GEO_API: 'https://leadpipe-server.onrender.com/geo',
   CATALOGS_API: 'https://leadpipe-server.onrender.com/catalogs',
   PARTNER_CATEGORIES_API: 'https://leadpipe-server.onrender.com/partner-categories',
