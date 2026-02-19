@@ -967,6 +967,7 @@
     const data = {
       partner_id: CONFIG.PARTNER_ID,
       category_id: CONFIG.CATEGORY_ID,
+      brand_id: CONFIG.BRAND_ID,
       lang: CONFIG.LANG || 'es',
       source: {
         type: CONFIG.SOURCE_TYPE,

@@ -12,6 +12,7 @@ const CONFIG = {
   // Partner & Category IDs (for dynamic templates)
   PARTNER_ID: 1,                       // FK to partners table
   CATEGORY_ID: 1,                      // FK to categories_catalog table
+  BRAND_ID: 1,                         // FK to brands table
 
   // Legacy fields (kept for backward compatibility)
   SERVICE: 'inheritance',
