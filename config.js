@@ -20,7 +20,7 @@ const CONFIG = {
   SERVICE_CATEGORY: 'real_property',   // Asset type slug for this landing
 
   // Form settings
-  SOURCE_TYPE: 'gestionatuherencia-form',
+  SOURCE_TYPE: 'inmoasesor-form',
   DEFAULT_STATE_NAME: 'Ciudad de México', // Pre-selected state
   COUNTRY: 'Mexico',
   LANG: 'es'                           // Language for templates
