@@ -10,7 +10,6 @@ const CONFIG = {
   PARTNER_CATEGORIES_API: 'https://leadpipe-server.onrender.com/partner-categories',
 
   // Partner & Category IDs (for dynamic templates)
-  PARTNER_ID: 1,                       // FK to partners table
   CATEGORY_ID: 1,                      // FK to categories_catalog table
   BRAND_ID: 1,                         // FK to brands table
 
